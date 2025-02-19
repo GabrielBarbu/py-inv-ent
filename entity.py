@@ -63,8 +63,9 @@ class Entity:
         """
         self.inv.save_to_file()
         with open("char.txt", "w") as file:
-            file.write(self.name + "," + str(self.health) + "," + str(self.base_dmg) + "," + str(self.equipped_item) + "\n")
-            
+            file.write(
+                self.name + "," + str(self.health) + "," + str(self.base_dmg) + "," + str(self.equipped_item) + "\n")
+
     def use_item(self, item_name: str):
         """Uses an item to heal
 
@@ -89,7 +90,7 @@ class Entity:
                     return -1
             else:
                 return -1
-            
+
     def check_health(self):
         """Checks the health of the character, to see if they are dead
 
@@ -100,7 +101,7 @@ class Entity:
             return -1
         else:
             return 1
-            
+
     def attack(self, enemy: object):
         """Attacks the enemy
 
@@ -115,6 +116,7 @@ class Entity:
             return enemy.check_health()
         else:
             return enemy.check_health()
+
 
 def create_character(inv, char_name, char_health, char_base_dmg):
     """Creates the character, and has integer checking
@@ -138,7 +140,16 @@ def create_character(inv, char_name, char_health, char_base_dmg):
     else:
         return -1
 
+
 def load_char(inv: Inventory):
+    """Loads the character
+
+    Args:
+        inv (Inventory): Inventory class
+
+    Returns:
+        Entity: Entity class
+    """
     try:
         with open("char.txt", "r") as file:
             char = [line.strip().split(',') for line in file]
@@ -148,6 +159,7 @@ def load_char(inv: Inventory):
                 base_dmg = int(char_data[2])
                 equipped_item = char_data[3]
                 plr = Entity(inv, name, health, base_dmg, equipped_item)
+                return plr
             inv.load_from_file()
     except OSError:
         temp_run = True
@@ -162,4 +174,5 @@ def load_char(inv: Inventory):
             else:
                 print("Character {} created".format(char_name))
                 plr.save()
+                return plr
                 temp_run = False
