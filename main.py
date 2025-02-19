@@ -12,11 +12,12 @@ except OSError:
     print("Character could not be loaded")
     run = False
 
-while run:
-    print("----MAIN MENU----")
-    print("1. Inventory + Character Menu")
-    print("2. Play (no existing)")
+if __name__ == "__main__":
+    while run:
+        print("----MAIN MENU----")
+        print("1. Inventory + Character Menu")
+        print("2. Play (no existing)") #TODO: Make the actual game part
 
-    user_choice = input("Enter your choice (1-2): ")
-    if user_choice == "1":
-        menu(plr)
+        user_choice = input("Enter your choice (1-2): ")
+        if user_choice == "1":
+            menu(plr)
