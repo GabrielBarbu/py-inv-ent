@@ -1,7 +1,7 @@
 from entity import Entity
 from inventory import Item
 
-def secret_menu(plr: Entity):
+def cheat_menu(plr: Entity):
     print("----CHEATER MENU----")
     print("1. Add an item to inventory")
     print("2. Add or remove quantity from an item")

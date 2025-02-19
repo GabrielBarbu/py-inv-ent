@@ -1,5 +1,5 @@
 from entity import Entity, Inventory
-from secret_menu import secret_menu
+from cheat_menu import cheat_menu
 
 def create_character(inv, char_name, char_health, char_base_dmg):
     """Creates the character, and has integer checking
@@ -108,4 +108,4 @@ def menu(plr: Entity):
                 run2 = False
 
         elif user_choice == "iamacheater":
-            secret_menu(plr)
+            cheat_menu(plr)
