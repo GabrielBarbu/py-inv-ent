@@ -1,28 +1,6 @@
 from entity import Entity, Inventory
 from cheat_menu import cheat_menu
 
-def create_character(inv, char_name, char_health, char_base_dmg):
-    """Creates the character, and has integer checking
-
-    Args:
-        inv (Inventory): Inventory class
-        char_name (str): Name of character
-        char_health (int): Character health
-        char_base_dmg (int): Character base damage
-
-    Returns:
-        Entity: Entity class if successful,
-        int: -1 if failed
-    """
-    if char_health.isdigit() and char_base_dmg.isdigit():
-        char_health = int(char_health)
-        char_base_dmg = int(char_base_dmg)
-        plr = Entity(inv, char_name, char_health, char_base_dmg, "None")
-        plr.save()
-        return plr
-    else:
-        return -1
-
 def menu(plr: Entity):
     """Runs the menu
 
