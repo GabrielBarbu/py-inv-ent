@@ -78,6 +78,7 @@ class Inventory:
     def load_from_file(self):
         """Loads inventory from a text file
         """
+        #TODO: Possibly broken
         with open("inv.txt", "r") as file:
             for line in file:
                 item_data = line.strip().split(',')
@@ -93,15 +94,7 @@ class Inventory:
                 self.add_to_inv(item)
 
     def move_item(self, item_name:str, new_location:int):
-        """Adds to item stack
-
-        Args:
-            item_name (str): Name of item
-            new_location (int): New location of item
-
-        Returns:
-            int: 1 if successful, -1 or -2 if failed
-        """
+        #TODO: Add information about function
         item = self.find_item(item_name)
         result1 = self.remove_from_inv(item.location)
         item.location = new_location
