@@ -117,30 +117,6 @@ class Entity:
         else:
             return enemy.check_health()
 
-
-def create_character(inv, char_name, char_health, char_base_dmg):
-    """Creates the character, and has integer checking
-
-    Args:
-        inv (Inventory): Inventory class
-        char_name (str): Name of character
-        char_health (int): Character health
-        char_base_dmg (int): Character base damage
-
-    Returns:
-        Entity: Entity class if successful,
-        int: -1 if failed
-    """
-    if char_health.isdigit() and char_base_dmg.isdigit():
-        char_health = int(char_health)
-        char_base_dmg = int(char_base_dmg)
-        plr = Entity(inv, char_name, char_health, char_base_dmg, "None")
-        plr.save()
-        return plr
-    else:
-        return -1
-
-
 def load_char(inv: Inventory):
     """Loads the character
 
@@ -166,13 +142,8 @@ def load_char(inv: Inventory):
 
         while temp_run:
             char_name = input("Enter the name of your character: ")
-            char_health = input("Enter the health of your character: ")
-            char_base_dmg = input("Enter the base damage of your character: ")
-            plr = create_character(inv, char_name, char_health, char_base_dmg)
-            if plr == -1:
-                print("The health and damage must be integers")
-            else:
-                print("Character {} created".format(char_name))
-                plr.save()
-                return plr
-                temp_run = False
+            plr = Entity(inv, char_name, 100, 0, "None")
+            print("Character {} created".format(char_name))
+            plr.save()
+            temp_run = False
+            return plr
