@@ -78,6 +78,7 @@ class Inventory:
     def load_from_file(self):
         """Loads inventory from a text file
         """
+        #TODO: Possibly broken
         with open("inv.txt", "r") as file:
             for line in file:
                 item_data = line.strip().split(',')
@@ -91,6 +92,14 @@ class Inventory:
                 healing_amt = int(item_data[7])
                 item = Item(item_name, item_location, stackable, max_stack, current_amt, damage, healing, healing_amt)
                 self.add_to_inv(item)
+
+    def move_item(self, item_name:str, new_location:int):
+        #TODO: Add information about function
+        item = self.find_item(item_name)
+        result1 = self.remove_from_inv(item.location)
+        item.location = new_location
+        result2 = self.add_to_inv(item)
+        return (result1 + result2) - 1
 
 class Item:
     def __init__(self, item_name: str, location: int, stackable: bool, max_stack: int, current_amt: int, damage: int, healing: bool, healing_amt: int):

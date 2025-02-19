@@ -16,10 +16,11 @@ def menu(plr: Entity):
         print("1. View stats of items in inventory")
         print("2. Remove an item from inventory")
         print("3. Equip or Unequip an item")
-        print("4. View character menu")
+        print("4. Move an item to another slot")
+        print("5. View character menu")
         print("")
 
-        user_choice = input("Enter your choice (1-4): ")
+        user_choice = input("Enter your choice (1-5): ")
 
         if user_choice == "1":
             for i in plr.inv.inventory.values():
@@ -59,8 +60,26 @@ def menu(plr: Entity):
                     print("The item does not exist or it is not equipped")
             else:
                 print("That is not a choice")
-                
+
         elif user_choice == "4":
+            item_name = input("Enter the name of the item: ")
+            new_location = input("Enter the new location for the item: ")
+
+            if new_location.isdigit():
+                new_location = int(new_location)
+                if not new_location > plr.inv.max_slots and not new_location < 0 and not new_location in plr.inv.inventory.keys():
+                    result = plr.inv.move_item(item_name, new_location)
+                    if result == 1:
+                        print("{} has been moved to slot {}".format(item_name, new_location))
+                        plr.save()
+                    else:
+                        print("This item could not be moved")
+                else:
+                    print("The item location is out of range or there is something already there")
+            else:
+                print("The new location must be an integer")
+                
+        elif user_choice == "5":
             while run2:
                 print("----CHARACTER MENU----")
                 print("1. View character stats")
