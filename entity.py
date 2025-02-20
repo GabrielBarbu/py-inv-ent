@@ -1,4 +1,4 @@
-from inventory import Inventory
+from inventory import Inventory, Item
 
 class Entity:
     def __init__(self, inventory: Inventory, char_name: str, char_health: int, char_base_dmg: int, equipped_item: str):
@@ -17,6 +17,21 @@ class Entity:
         self.base_dmg = char_base_dmg
         self.real_dmg = self.base_dmg
         self.equipped_item = equipped_item
+
+    def check_item(self, item_name: str):
+        """Equips an item, the damage becomes item damage
+
+        Args:
+            item_name (str): Name of item
+
+        Returns:
+            int: 1 if successful, "None" if failed
+        """
+        item = self.inv.find_item(item_name)
+        if type(item) == Item:
+            return 1
+        else:
+            return "None"
 
     def equip_item(self, item_name: str):
         """Equips an item, the damage becomes item damage
@@ -135,8 +150,14 @@ def load_char(inv: Inventory):
                 base_dmg = int(char_data[2])
                 equipped_item = char_data[3]
                 plr = Entity(inv, name, health, base_dmg, equipped_item)
+            plr.inv.load_from_file()
+            result = plr.check_item(equipped_item)
+            if result == 1:
                 return plr
-            inv.load_from_file()
+            else:
+                plr.equipped_item = result
+                plr.save()
+                return plr
     except OSError:
         temp_run = True
 
