@@ -18,6 +18,7 @@ def menu(plr: Entity):
         print("3. Equip or Unequip an item")
         print("4. Move an item to another slot")
         print("5. View character menu")
+        print("6. Exit Menu")
         print("")
 
         user_choice = input("Enter your choice (1-5): ")
@@ -103,6 +104,9 @@ def menu(plr: Entity):
                     else:
                         print("This item does not exist or could not be used")
                 run2 = False
+
+        elif user_choice == "6":
+            break
 
         elif user_choice == "iamacheater":
             cheat_menu(plr)
