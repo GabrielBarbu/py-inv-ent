@@ -47,3 +47,6 @@ if __name__ == "__main__":
                             print("The item location is out of range or there is something already there")
                     else:
                         print("Your location must be an integer")
+
+                elif user_choice.lower() == "menu":
+                    menu(plr)
