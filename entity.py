@@ -1,4 +1,4 @@
-from inventory import Inventory
+from inventory import Inventory, Item
 
 class Entity:
     def __init__(self, inventory: Inventory, char_name: str, char_health: int, char_base_dmg: int, equipped_item: str):
@@ -17,6 +17,21 @@ class Entity:
         self.base_dmg = char_base_dmg
         self.real_dmg = self.base_dmg
         self.equipped_item = equipped_item
+
+    def check_item(self, item_name: str):
+        """Equips an item, the damage becomes item damage
+
+        Args:
+            item_name (str): Name of item
+
+        Returns:
+            int: 1 if successful, "None" if failed
+        """
+        item = self.inv.find_item(item_name)
+        if type(item) == Item:
+            return 1
+        else:
+            return "None"
 
     def equip_item(self, item_name: str):
         """Equips an item, the damage becomes item damage
@@ -63,8 +78,9 @@ class Entity:
         """
         self.inv.save_to_file()
         with open("char.txt", "w") as file:
-            file.write(self.name + "," + str(self.health) + "," + str(self.base_dmg) + "," + str(self.equipped_item) + "\n")
-            
+            file.write(
+                self.name + "," + str(self.health) + "," + str(self.base_dmg) + "," + str(self.equipped_item) + "\n")
+
     def use_item(self, item_name: str):
         """Uses an item to heal
 
@@ -89,7 +105,7 @@ class Entity:
                     return -1
             else:
                 return -1
-            
+
     def check_health(self):
         """Checks the health of the character, to see if they are dead
 
@@ -100,7 +116,7 @@ class Entity:
             return -1
         else:
             return 1
-            
+
     def attack(self, enemy: object):
         """Attacks the enemy
 
@@ -116,29 +132,15 @@ class Entity:
         else:
             return enemy.check_health()
 
-def create_character(inv, char_name, char_health, char_base_dmg):
-    """Creates the character, and has integer checking
+def load_char(inv: Inventory):
+    """Loads the character
 
     Args:
         inv (Inventory): Inventory class
-        char_name (str): Name of character
-        char_health (int): Character health
-        char_base_dmg (int): Character base damage
 
     Returns:
-        Entity: Entity class if successful,
-        int: -1 if failed
+        Entity: Entity class
     """
-    if char_health.isdigit() and char_base_dmg.isdigit():
-        char_health = int(char_health)
-        char_base_dmg = int(char_base_dmg)
-        plr = Entity(inv, char_name, char_health, char_base_dmg, "None")
-        plr.save()
-        return plr
-    else:
-        return -1
-
-def load_char(inv: Inventory):
     try:
         with open("char.txt", "r") as file:
             char = [line.strip().split(',') for line in file]
@@ -148,18 +150,21 @@ def load_char(inv: Inventory):
                 base_dmg = int(char_data[2])
                 equipped_item = char_data[3]
                 plr = Entity(inv, name, health, base_dmg, equipped_item)
-            inv.load_from_file()
+            plr.inv.load_from_file()
+            result = plr.check_item(equipped_item)
+            if result == 1:
+                return plr
+            else:
+                plr.equipped_item = result
+                plr.save()
+                return plr
     except OSError:
         temp_run = True
 
         while temp_run:
             char_name = input("Enter the name of your character: ")
-            char_health = input("Enter the health of your character: ")
-            char_base_dmg = input("Enter the base damage of your character: ")
-            plr = create_character(inv, char_name, char_health, char_base_dmg)
-            if plr == -1:
-                print("The health and damage must be integers")
-            else:
-                print("Character {} created".format(char_name))
-                plr.save()
-                temp_run = False
+            plr = Entity(inv, char_name, 100, 0, "None")
+            print("Character {} created".format(char_name))
+            plr.save()
+            temp_run = False
+            return plr
