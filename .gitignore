@@ -173,3 +173,7 @@ cython_debug/
 # runtime files from code
 char.txt
 inv.txt
+
+# extras
+.idea/
+.swm/
