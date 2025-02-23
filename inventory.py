@@ -92,6 +92,22 @@ class Inventory:
                 item = Item(item_name, item_location, stackable, max_stack, current_amt, damage, healing, healing_amt)
                 self.add_to_inv(item)
 
+    def move_item(self, item_name:str, new_location:int):
+        """Adds to item stack
+
+        Args:
+            item_name (str): Name of item
+            new_location (int): New location of item
+
+        Returns:
+            int: 1 if successful, -1 or -2 if failed
+        """
+        item = self.find_item(item_name)
+        result1 = self.remove_from_inv(item.location)
+        item.location = new_location
+        result2 = self.add_to_inv(item)
+        return (result1 + result2) - 1
+
 class Item:
     def __init__(self, item_name: str, location: int, stackable: bool, max_stack: int, current_amt: int, damage: int, healing: bool, healing_amt: int):
         """Creates an Item class
