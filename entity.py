@@ -90,21 +90,18 @@ class Entity:
         Returns:
             int: 1 if successful, -1 if failed
         """
-        for i in self.inv.inventory.values():
-            if i.name.strip() == item_name.strip():
-                if i.healing:
-                    self.health += i.healing_amt
-                    if self.equipped_item == i.name.strip():
-                        self.unequip_item(item_name)
-                    if i.stackable and i.current_amt > 1:
-                        i.remove_from_stack(1)
-                    else:
-                        self.inv.remove_from_inv(i.location)
-                    return 1
-                else:
-                    return -1
+        i = self.inv.find_item(item_name)
+        if i.healing:
+            self.health += i.healing_amt
+            if self.equipped_item.strip() == i.name.strip():
+                self.unequip_item(item_name)
+            if i.stackable and i.current_amt > 1:
+                i.remove_from_stack(1)
             else:
-                return -1
+                self.inv.remove_from_inv(i.location)
+            return 1
+        else:
+            return -1
 
     def check_health(self):
         """Checks the health of the character, to see if they are dead

@@ -1,6 +1,9 @@
-from menu import menu, Inventory
+from menu import menu
+from inventory import Inventory
 from entity import load_char
 from inventory import Item
+from tkinter import *
+from tkinter import ttk
 
 inv = Inventory(20)
 enm_inv = Inventory(5)
@@ -12,6 +15,14 @@ try:
 except OSError:
     print("Character could not be loaded")
     run = False
+
+root = Tk()
+frm = ttk.Frame(root, padding=10)
+frm.grid()
+ttk.Label(frm, text="----MAIN MENU----").grid(column=0, row=0)
+ttk.Button(frm, text="Inventory + Character Menu", command=lambda: menu(plr)).grid(column=0, row=1)
+ttk.Button(frm, text="Quit", command=root.destroy).grid(column=0, row=2)
+root.mainloop()
 
 if __name__ == "__main__":
     while run:
