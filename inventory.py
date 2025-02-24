@@ -21,10 +21,10 @@ class Inventory:
             int: -1 If failed
         """
         for i in self.inventory.values():
-            if i.name.strip() == item_name.strip():
+            if i.name.strip().lower() == item_name.strip().lower():
                 return i
-            else:
-                return -1
+
+        return -1
 
     def add_to_inv(self, item: object):
         """Adds an item to the inventory

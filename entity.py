@@ -81,20 +81,20 @@ class Entity:
             file.write(
                 self.name + "," + str(self.health) + "," + str(self.base_dmg) + "," + str(self.equipped_item) + "\n")
 
-    def use_item(self, item_name: str):
+    def use_item(self, item: Item):
         """Uses an item to heal
 
         Args:
-            item_name (str): Item name
+            item (Item): Item class
 
         Returns:
             int: 1 if successful, -1 if failed
         """
-        i = self.inv.find_item(item_name)
+        i = item
         if i.healing:
             self.health += i.healing_amt
             if self.equipped_item.strip() == i.name.strip():
-                self.unequip_item(item_name)
+                self.unequip_item(i.name)
             if i.stackable and i.current_amt > 1:
                 i.remove_from_stack(1)
             else:
