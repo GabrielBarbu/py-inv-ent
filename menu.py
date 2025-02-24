@@ -54,17 +54,20 @@ def menu(plr: Entity):
         plr (Entity): Player class
     """
 
+    def update_inventory_display():
+        inventory_text = "\n".join([
+            f"Name: {i.name} | Slot: {i.location} | Amount: {i.current_amt} | Damage: {i.damage} | Healing: {i.healing_amt}"
+            for i in plr.inv.inventory.values()
+        ])
+        use_label.config(text=inventory_text)
+
     def on_selection(event):
         """Handles user selection from the combobox"""
         user_choice = cmbx.get()
         use_label.config(text=f"Selected: {user_choice}")
 
         if user_choice.startswith("1"):
-            inventory_text = "\n".join([
-                f"Name: {i.name} | Slot: {i.location} | Amount: {i.current_amt} | Damage: {i.damage} | Healing: {i.healing_amt}"
-                for i in plr.inv.inventory.values()
-            ])
-            use_label.config(text=inventory_text)
+            update_inventory_display()
 
         elif user_choice.startswith("2"):
             item_name = tkinter.simpledialog.askstring("Remove Item", "Enter Item Name:")
