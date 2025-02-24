@@ -33,45 +33,37 @@ class Entity:
         else:
             return "None"
 
-    def equip_item(self, item_name: str):
+    def equip_item(self, item: Item):
         """Equips an item, the damage becomes item damage
 
         Args:
-            item_name (str): Name of item
+            item (Item): Item class
 
         Returns:
             int: 1 if successful, -1 if failed
         """
         if self.equipped_item == "None":
-            for i in self.inv.inventory.values():
-                if i.name.strip() == item_name.strip():
-                    self.equipped_item = i.name
-                    self.real_dmg = i.damage
-                    return 1
-                else:
-                    return -1
+            self.equipped_item = item.name
+            self.real_dmg = item.damage
+            return 1
         else:
             return -1
 
-    def unequip_item(self, item_name: str):
+    def unequip_item(self, item: Item):
         """Unequips an item, damage is returned to base
 
         Args:
-            item_name (str): Name of item
+            item (Item): Item class
 
         Returns:
             int: 1 if successful, -1 if failed
         """
-        for i in self.inv.inventory.values():
-            if i.name.strip() == item_name.strip():
-                if self.equipped_item.strip() == i.name.strip():
-                    self.equipped_item = "None"
-                    self.real_dmg = self.base_dmg
-                    return 1
-                else:
-                    return -1
-            else:
-                return -1
+        if self.equipped_item.strip().lower() == item.name.strip().lower():
+            self.equipped_item = "None"
+            self.real_dmg = self.base_dmg
+            return 1
+        else:
+            return -1
 
     def save(self):
         """Saves the character to a text file and calls inventory save

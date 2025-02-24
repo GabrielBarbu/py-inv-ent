@@ -27,12 +27,12 @@ def open_character_menu(plr: Entity):
         item_name = tkinter.simpledialog.askstring("Use Item", "Enter the name of the item to use:", parent=char_window)
         if item_name:
             try:
-                result = plr.use_item(item_name)
                 item = plr.inv.find_item(item_name)
+                result = plr.use_item(item)
 
                 if result == 1 and item != -1:
                     healing = item.healing_amt
-                    stats_label.config(text=f"Used {item_name}, healed {healing} HP.")
+                    stats_label.config(text=f"Used {item.name}, healed {healing} HP.")
                     plr.save()
                 else:
                     stats_label.config(text="Item does not exist or cannot be used.")
@@ -72,7 +72,7 @@ def menu(plr: Entity):
             if item != -1:
                 confirmation = tkinter.simpledialog.askstring("Confirm", f"Delete {item.name}? (Y/N)")
                 if confirmation and confirmation.upper() == "Y":
-                    plr.inv.remove_from_inv(int(item.location))
+                    plr.inv.remove_from_inv(item, plr)
                     plr.save()
                     use_label.config(text=f"{item.name} removed from inventory.")
                 else:
@@ -85,13 +85,16 @@ def menu(plr: Entity):
             item_name = tkinter.simpledialog.askstring("Enter Item Name", "Enter Item Name:")
 
             if action and item_name:
+                item = plr.inv.find_item(item_name)
                 if action.upper() == "E":
-                    result = plr.equip_item(item_name)
-                    use_label.config(text=f"{item_name} equipped." if result else "Item not found or already equipped.")
+                    result = plr.equip_item(item)
+                    use_label.config(text=f"{item.name} equipped." if result else "Item not found or already equipped.")
+                    plr.save()
                 elif action.upper() == "U":
-                    result = plr.unequip_item(item_name)
+                    result = plr.unequip_item(item)
                     use_label.config(
-                        text=f"{item_name} unequipped." if result else "Item not equipped or does not exist.")
+                        text=f"{item.name} unequipped." if result else "Item not equipped or does not exist.")
+                    plr.save()
                 else:
                     use_label.config(text="Invalid choice.")
 
@@ -102,9 +105,10 @@ def menu(plr: Entity):
             if new_location and new_location.isdigit():
                 new_location = int(new_location)
                 if 0 <= new_location <= plr.inv.max_slots and new_location not in plr.inv.inventory.keys():
-                    result = plr.inv.move_item(item_name, new_location)
+                    item = plr.inv.find_item(item_name)
+                    result = plr.inv.move_item(item, new_location)
                     if result == 1:
-                        use_label.config(text=f"{item_name} moved to slot {new_location}.")
+                        use_label.config(text=f"{item.name} moved to slot {new_location}.")
                         plr.save()
                     else:
                         use_label.config(text="Item could not be moved.")
