@@ -152,7 +152,7 @@ def load_char(inv: Inventory):
 
         while temp_run:
             char_name = input("Enter the name of your character: ")
-            plr = Entity(inv, char_name, 100, 0, "None")
+            plr = Entity(inv, char_name, 100, 10, "None")
             print("Character {} created".format(char_name))
             plr.save()
             temp_run = False
