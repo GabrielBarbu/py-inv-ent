@@ -1,5 +1,51 @@
-from entity import Entity, Inventory
+import tkinter.simpledialog
 from cheat_menu import cheat_menu
+from entity import Entity
+from tkinter import *
+from tkinter import ttk
+
+
+def open_character_menu(plr: Entity):
+    """Runs the character menu
+
+    Args:
+        plr (Entity): Player class
+    """
+    char_window = Toplevel()
+    char_window.title("Character Menu")
+
+    ttk.Label(char_window, text="----CHARACTER MENU----").grid(column=0, row=0)
+
+    def view_stats():
+        stats_text = (f"Name: {plr.name}\n"
+                      f"Health: {plr.health}\n"
+                      f"Current Damage: {plr.real_dmg}\n"
+                      f"Currently Equipped: {plr.equipped_item}")
+        stats_label.config(text=stats_text)
+
+    def use_item():
+        item_name = tkinter.simpledialog.askstring("Use Item", "Enter the name of the item to use:", parent=char_window)
+        if item_name:
+            try:
+                item = plr.inv.find_item(item_name)
+                result = plr.use_item(item)
+
+                if result == 1 and item != -1:
+                    healing = item.healing_amt
+                    stats_label.config(text=f"Used {item.name}, healed {healing} HP.")
+                    plr.save()
+                else:
+                    stats_label.config(text="Item does not exist or cannot be used.")
+            except Exception as e:
+                stats_label.config(text=f"Error using item: {e}")
+
+    stats_label = Label(char_window, text="", wraplength=300, justify="left")
+    stats_label.grid(column=0, row=3)
+
+    ttk.Button(char_window, text="View Character Stats", command=view_stats).grid(column=0, row=1)
+    ttk.Button(char_window, text="Use Item", command=use_item).grid(column=0, row=2)
+    ttk.Button(char_window, text="Close", command=char_window.destroy).grid(column=0, row=4)
+
 
 def menu(plr: Entity):
     """Runs the menu
@@ -8,105 +54,111 @@ def menu(plr: Entity):
         plr (Entity): Player class
     """
 
-    run = True
+    def update_inventory_display():
+        inventory_text = "\n".join([
+            f"Name: {i.name} | Slot: {i.location} | Amount: {i.current_amt} | Damage: {i.damage} | Healing: {i.healing_amt}"
+            for i in plr.inv.inventory.values()
+        ])
+        use_label.config(text=inventory_text)
 
-    while run:
-        run2 = True
-        print("----INVENTORY MENU----")
-        print("1. View stats of items in inventory")
-        print("2. Remove an item from inventory")
-        print("3. Equip or Unequip an item")
-        print("4. Move an item to another slot")
-        print("5. View character menu")
-        print("6. Exit Menu")
-        print("")
+    def on_selection(event):
+        """Handles user selection from the combobox"""
+        user_choice = cmbx.get()
+        use_label.config(text=f"Selected: {user_choice}")
 
-        user_choice = input("Enter your choice (1-5): ")
+        if user_choice.startswith("1"):
+            update_inventory_display()
 
-        if user_choice == "1":
-            for i in plr.inv.inventory.values():
-                print("Name: {} Slot: {} Amount: {} Damage: {} Healing: {}".format(i.name,i.location,i.current_amt,i.damage,i.healing_amt))
-
-        elif user_choice == "2":
-            item_name = input("Enter the name of the item: ")
-
+        elif user_choice.startswith("2"):
+            item_name = tkinter.simpledialog.askstring("Remove Item", "Enter Item Name:")
             item = plr.inv.find_item(item_name)
             if item != -1:
-                item_location = int(item.location)
-                confirmation = input("The item you are deleting is {} are you sure you wish to continue? (Y/N): ".format(item.name))
-                if confirmation.upper() == "Y":
-                    plr.inv.remove_from_inv(item_location)
+                confirmation = tkinter.simpledialog.askstring("Confirm", f"Delete {item.name}? (Y/N)")
+                if confirmation and confirmation.upper() == "Y":
+                    plr.inv.remove_from_inv(item, plr)
                     plr.save()
+                    use_label.config(text=f"{item.name} removed from inventory.")
+                else:
+                    use_label.config(text="Deletion canceled.")
             else:
-                print("The item was not found")
+                use_label.config(text="Item not found.")
 
-        elif user_choice == "3":
-            user_choice = input("Equip or Unequip (E/U): ")
+        elif user_choice.startswith("3"):
+            action = tkinter.simpledialog.askstring("Equip or Unequip", "Equip (E) or Unequip (U)?")
+            item_name = tkinter.simpledialog.askstring("Enter Item Name", "Enter Item Name:")
 
-            if user_choice.upper() == "E":
-                item_name = input("Enter the name of the item: ")
-                result = plr.equip_item(item_name)
-                if result == 1:
-                    print("{} has been equipped".format(item_name))
+            if action and item_name:
+                item = plr.inv.find_item(item_name)
+                if action.upper() == "E":
+                    result = plr.equip_item(item)
+                    use_label.config(text=f"{item.name} equipped." if result else "Item not found or already equipped.")
+                    plr.save()
+                elif action.upper() == "U":
+                    result = plr.unequip_item(item)
+                    use_label.config(
+                        text=f"{item.name} unequipped." if result else "Item not equipped or does not exist.")
                     plr.save()
                 else:
-                    print("The item does not exist or something is already equipped")
-            elif user_choice.upper() == "U":
-                item_name = input("Enter the name of the item: ")
-                result = plr.unequip_item(item_name)
-                if result == 1:
-                    print("{} has been unequipped".format(item_name))
-                    plr.save()
-                else:
-                    print("The item does not exist or it is not equipped")
-            else:
-                print("That is not a choice")
+                    use_label.config(text="Invalid choice.")
 
-        elif user_choice == "4":
-            item_name = input("Enter the name of the item: ")
-            new_location = input("Enter the new location for the item: ")
+        elif user_choice.startswith("4"):
+            item_name = tkinter.simpledialog.askstring("Move Item", "Enter the name of the item:")
+            new_location = tkinter.simpledialog.askstring("New Location", "Enter the new location for the item:")
 
-            if new_location.isdigit():
+            if new_location and new_location.isdigit():
                 new_location = int(new_location)
-                if not new_location > plr.inv.max_slots and not new_location < 0 and not new_location in plr.inv.inventory.keys():
-                    result = plr.inv.move_item(item_name, new_location)
+                if 0 <= new_location <= plr.inv.max_slots and new_location not in plr.inv.inventory.keys():
+                    item = plr.inv.find_item(item_name)
+                    result = plr.inv.move_item(item, new_location)
                     if result == 1:
-                        print("{} has been moved to slot {}".format(item_name, new_location))
+                        use_label.config(text=f"{item.name} moved to slot {new_location}.")
                         plr.save()
                     else:
-                        print("This item could not be moved")
+                        use_label.config(text="Item could not be moved.")
                 else:
-                    print("The item location is out of range or there is something already there")
+                    use_label.config(text="Invalid slot: Out of range or occupied.")
             else:
-                print("The new location must be an integer")
-                
-        elif user_choice == "5":
-            while run2:
-                print("----CHARACTER MENU----")
-                print("1. View character stats")
-                print("2. Use an item")
-                print("")
-                
-                user_choice = input("Enter your choice: ")
-                
-                if user_choice == "1":
-                    print("Name:", plr.name)
-                    print("Health:", plr.health)
-                    print("Current damage:", plr.real_dmg)
-                    print("Currently equipped item:", plr.equipped_item)
-                    
-                elif user_choice == "2":
-                    item_name = input("Enter the name of the item you wish to use: ")
-                    result = plr.use_item(item_name)
-                    if result == 1:
-                        print("You have used {} to heal {} hp".format(item_name, plr.inv.find_item(item_name).healing_amt))
-                        plr.save()
-                    else:
-                        print("This item does not exist or could not be used")
-                run2 = False
+                use_label.config(text="Invalid input: Location must be a number.")
 
-        elif user_choice == "6":
-            break
+        elif user_choice.startswith("5"):
+            open_character_menu(plr)
 
-        elif user_choice == "iamacheater":
+        elif user_choice.startswith("6"):
+            root.destroy()
+
+    def check_cheat_code(cheat_code_entry):
+        if cheat_code_entry.get() == "iamacheater":
             cheat_menu(plr)
+            use_label.config(text="Cheat menu activated.")
+
+    root = Tk()
+    root.title("Inventory Menu")
+
+    frm = ttk.Frame(root, padding=10)
+    frm.grid()
+
+    ttk.Label(frm, text="----INVENTORY MENU----").grid(column=0, row=0)
+    use_label = Label(frm, text="", wraplength=300, justify="left")
+    use_label.grid(column=0, row=2)
+
+    cmbx = ttk.Combobox(frm, width=40, state="readonly")
+    cmbx['values'] = [
+        "1. View stats of items in inventory",
+        "2. Remove an item from inventory",
+        "3. Equip or Unequip an item",
+        "4. Move an item to another slot",
+        "5. View character menu",
+        "6. Exit Menu",
+    ]
+    cmbx.grid(column=0, row=1)
+    cmbx.bind("<<ComboboxSelected>>", on_selection)
+
+    ttk.Label(frm, text="Enter Cheat Code:").grid(column=0, row=5)
+    cheat_code_entry = Entry(frm, width=20)
+    cheat_code_entry.grid(column=0, row=6)
+    ttk.Button(frm, text="Submit", command=lambda: check_cheat_code(cheat_code_entry)).grid(column=0, row=7)
+
+    ttk.Button(frm, text="Clear", command=lambda: cmbx.set('')).grid(column=0, row=3)
+    ttk.Button(frm, text="Quit", command=root.destroy).grid(column=0, row=4)
+
+    root.mainloop()

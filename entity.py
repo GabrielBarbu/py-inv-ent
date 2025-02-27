@@ -33,45 +33,37 @@ class Entity:
         else:
             return "None"
 
-    def equip_item(self, item_name: str):
+    def equip_item(self, item: Item):
         """Equips an item, the damage becomes item damage
 
         Args:
-            item_name (str): Name of item
+            item (Item): Item class
 
         Returns:
             int: 1 if successful, -1 if failed
         """
         if self.equipped_item == "None":
-            for i in self.inv.inventory.values():
-                if i.name.strip() == item_name.strip():
-                    self.equipped_item = i.name
-                    self.real_dmg = i.damage
-                    return 1
-                else:
-                    return -1
+            self.equipped_item = item.name
+            self.real_dmg = item.damage
+            return 1
         else:
             return -1
 
-    def unequip_item(self, item_name: str):
+    def unequip_item(self, item: Item):
         """Unequips an item, damage is returned to base
 
         Args:
-            item_name (str): Name of item
+            item (Item): Item class
 
         Returns:
             int: 1 if successful, -1 if failed
         """
-        for i in self.inv.inventory.values():
-            if i.name.strip() == item_name.strip():
-                if self.equipped_item.strip() == i.name.strip():
-                    self.equipped_item = "None"
-                    self.real_dmg = self.base_dmg
-                    return 1
-                else:
-                    return -1
-            else:
-                return -1
+        if self.equipped_item.strip().lower() == item.name.strip().lower():
+            self.equipped_item = "None"
+            self.real_dmg = self.base_dmg
+            return 1
+        else:
+            return -1
 
     def save(self):
         """Saves the character to a text file and calls inventory save
@@ -81,30 +73,27 @@ class Entity:
             file.write(
                 self.name + "," + str(self.health) + "," + str(self.base_dmg) + "," + str(self.equipped_item) + "\n")
 
-    def use_item(self, item_name: str):
+    def use_item(self, item: Item):
         """Uses an item to heal
 
         Args:
-            item_name (str): Item name
+            item (Item): Item class
 
         Returns:
             int: 1 if successful, -1 if failed
         """
-        for i in self.inv.inventory.values():
-            if i.name.strip() == item_name.strip():
-                if i.healing:
-                    self.health += i.healing_amt
-                    if self.equipped_item == i.name.strip():
-                        self.unequip_item(item_name)
-                    if i.stackable and i.current_amt > 1:
-                        i.remove_from_stack(1)
-                    else:
-                        self.inv.remove_from_inv(i.location)
-                    return 1
-                else:
-                    return -1
+        i = item
+        if i.healing:
+            self.health += i.healing_amt
+            if self.equipped_item.strip() == i.name.strip():
+                self.unequip_item(i)
+            if i.stackable and i.current_amt > 1:
+                i.remove_from_stack(1)
             else:
-                return -1
+                self.inv.remove_from_inv(i.location, self)
+            return 1
+        else:
+            return -1
 
     def check_health(self):
         """Checks the health of the character, to see if they are dead
