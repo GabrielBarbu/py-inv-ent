@@ -29,6 +29,7 @@ def cheat_menu(plr: Entity):
         def modify_health():
             health = tkinter.simpledialog.askinteger("Health Modification", "Enter new health:", parent=char_window)
             plr.health = health
+            plr.save()
 
         stats_label = Label(char_window, text="", wraplength=300, justify="left")
         stats_label.grid(column=0, row=3)
