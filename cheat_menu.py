@@ -12,6 +12,31 @@ def cheat_menu(plr: Entity):
 
     ttk.Label(cheat_window, text="----CHEATER MENU----").grid(column=0, row=0)
 
+    def open_char_cheat_menu():
+        """Runs the character cheat menu """
+        char_window = Toplevel()
+        char_window.title("Character Menu")
+
+        ttk.Label(char_window, text="----CHARACTER MENU----").grid(column=0, row=0)
+
+        def view_stats():
+            stats_text = (f"Name: {plr.name}\n"
+                          f"Health: {plr.health}\n"
+                          f"Current Damage: {plr.real_dmg}\n"
+                          f"Currently Equipped: {plr.equipped_item}")
+            stats_label.config(text=stats_text)
+
+        def modify_health():
+            health = tkinter.simpledialog.askinteger("Health Modification", "Enter new health:", parent=char_window)
+            plr.health = health
+
+        stats_label = Label(char_window, text="", wraplength=300, justify="left")
+        stats_label.grid(column=0, row=3)
+
+        ttk.Button(char_window, text="View Character Stats", command=view_stats).grid(column=0, row=1)
+        ttk.Button(char_window, text="Modify Health", command=modify_health).grid(column=0, row=2)
+        ttk.Button(char_window, text="Close", command=char_window.destroy).grid(column=0, row=4)
+
     def add_item():
         item_name = tkinter.simpledialog.askstring("Add Item", "Enter the name of the item:", parent=cheat_window)
         item_location = tkinter.simpledialog.askinteger("Item Location", f"Enter the spot (0-{plr.inv.max_slots}):",
@@ -84,4 +109,5 @@ def cheat_menu(plr: Entity):
 
     ttk.Button(cheat_window, text="Add Item", command=add_item).grid(column=0, row=1)
     ttk.Button(cheat_window, text="Modify Item Quantity", command=modify_quantity).grid(column=0, row=2)
-    ttk.Button(cheat_window, text="Close", command=cheat_window.destroy).grid(column=0, row=4)
+    ttk.Button(cheat_window, text="Character Cheat Menu", command=open_char_cheat_menu).grid(column=0, row=3)
+    ttk.Button(cheat_window, text="Close", command=cheat_window.destroy).grid(column=0, row=5)
