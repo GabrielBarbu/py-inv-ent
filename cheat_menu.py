@@ -37,12 +37,12 @@ def cheat_menu(plr: Entity):
             plr.save()
 
         stats_label = Label(char_window, text="", wraplength=300, justify="left")
-        stats_label.grid(column=0, row=3)
+        stats_label.grid(column=0, row=4)
 
         ttk.Button(char_window, text="View Character Stats", command=view_stats).grid(column=0, row=1)
         ttk.Button(char_window, text="Modify Health", command=modify_health).grid(column=0, row=2)
         ttk.Button(char_window, text="Modify Damage", command=modify_dmg).grid(column=0, row=3)
-        ttk.Button(char_window, text="Close", command=char_window.destroy).grid(column=0, row=4)
+        ttk.Button(char_window, text="Close", command=char_window.destroy).grid(column=0, row=5)
 
     def add_item():
         item_name = tkinter.simpledialog.askstring("Add Item", "Enter the name of the item:", parent=cheat_window)
