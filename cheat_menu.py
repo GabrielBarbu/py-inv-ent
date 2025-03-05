@@ -31,11 +31,17 @@ def cheat_menu(plr: Entity):
             plr.health = health
             plr.save()
 
+        def modify_dmg():
+            damage = tkinter.simpledialog.askinteger("Damage Modification", "Enter new damage:", parent=char_window)
+            plr.base_dmg = damage
+            plr.save()
+
         stats_label = Label(char_window, text="", wraplength=300, justify="left")
         stats_label.grid(column=0, row=3)
 
         ttk.Button(char_window, text="View Character Stats", command=view_stats).grid(column=0, row=1)
         ttk.Button(char_window, text="Modify Health", command=modify_health).grid(column=0, row=2)
+        ttk.Button(char_window, text="Modify Damage", command=modify_dmg).grid(column=0, row=3)
         ttk.Button(char_window, text="Close", command=char_window.destroy).grid(column=0, row=4)
 
     def add_item():
