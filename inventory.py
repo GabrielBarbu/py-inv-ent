@@ -23,7 +23,6 @@ class Inventory:
         for i in self.inventory.values():
             if i.name.strip().lower() == item_name.strip().lower():
                 return i
-
         return -1
 
     def add_to_inv(self, item: object):
@@ -95,17 +94,18 @@ class Inventory:
                 item = Item(item_name, item_location, stackable, max_stack, current_amt, damage, healing, healing_amt)
                 self.add_to_inv(item)
 
-    def move_item(self, item: object, new_location:int):
+    def move_item(self, item: object, new_location: int, plr: object):
         """Adds to item stack
 
         Args:
+            plr (object): Entity class
             item (object): Item class
             new_location (int): New location of item
 
         Returns:
             int: 1 if successful, -1 or -2 if failed
         """
-        result1 = self.remove_from_inv(item.location)
+        result1 = self.remove_from_inv(item, plr)
         item.location = new_location
         result2 = self.add_to_inv(item)
         return (result1 + result2) - 1

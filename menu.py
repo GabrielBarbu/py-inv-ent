@@ -26,19 +26,17 @@ def menu(plr: Entity):
 
         if user_choice == "1":
             for i in plr.inv.inventory.values():
-                print("Name: {} Slot: {} Amount: {} Damage: {} Healing: {}".format(i.name, i.location, i.current_amt,
-                                                                                   i.damage, i.healing_amt))
+                print("Name: {} Slot: {} Amount: {} Damage: {} Healing: {}".format(i.name, i.location, i.current_amt, i.damage, i.healing_amt))
 
         elif user_choice == "2":
             item_name = input("Enter the name of the item: ")
 
             item = plr.inv.find_item(item_name)
             if item != -1:
-                item_location = int(item.location)
                 confirmation = input(
                     "The item you are deleting is {} are you sure you wish to continue? (Y/N): ".format(item.name))
                 if confirmation.upper() == "Y":
-                    plr.inv.remove_from_inv(item_location)
+                    plr.inv.remove_from_inv(item, plr)
                     plr.save()
             else:
                 print("The item was not found")
@@ -48,17 +46,19 @@ def menu(plr: Entity):
 
             if user_choice.upper() == "E":
                 item_name = input("Enter the name of the item: ")
-                result = plr.equip_item(item_name)
+                item = plr.inv.find_item(item_name)
+                result = plr.equip_item(item)
                 if result == 1:
-                    print("{} has been equipped".format(item_name))
+                    print("{} has been equipped".format(item.name))
                     plr.save()
                 else:
                     print("The item does not exist or something is already equipped")
             elif user_choice.upper() == "U":
                 item_name = input("Enter the name of the item: ")
-                result = plr.unequip_item(item_name)
+                item = plr.inv.find_item(item_name)
+                result = plr.unequip_item(item)
                 if result == 1:
-                    print("{} has been unequipped".format(item_name))
+                    print("{} has been unequipped".format(item.name))
                     plr.save()
                 else:
                     print("The item does not exist or it is not equipped")
@@ -72,9 +72,10 @@ def menu(plr: Entity):
             if new_location.isdigit():
                 new_location = int(new_location)
                 if not new_location > plr.inv.max_slots and not new_location < 0 and not new_location in plr.inv.inventory.keys():
-                    result = plr.inv.move_item(item_name, new_location)
+                    item = plr.inv.find_item(item_name)
+                    result = plr.inv.move_item(item, new_location)
                     if result == 1:
-                        print("{} has been moved to slot {}".format(item_name, new_location))
+                        print("{} has been moved to slot {}".format(item, new_location))
                         plr.save()
                     else:
                         print("This item could not be moved")
@@ -100,10 +101,10 @@ def menu(plr: Entity):
 
                 elif user_choice == "2":
                     item_name = input("Enter the name of the item you wish to use: ")
-                    result = plr.use_item(item_name)
+                    item = plr.inv.find_item(item_name)
+                    result = plr.use_item(item)
                     if result == 1:
-                        print("You have used {} to heal {} hp".format(item_name,
-                                                                      plr.inv.find_item(item_name).healing_amt))
+                        print("You have used {} to heal {} hp".format(item.name, item.healing_amt))
                         plr.save()
                     else:
                         print("This item does not exist or could not be used")
