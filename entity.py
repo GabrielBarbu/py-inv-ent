@@ -19,7 +19,7 @@ class Entity:
         self.equipped_item = equipped_item
 
     def check_item(self, item_name: str):
-        """Equips an item, the damage becomes item damage
+        """Checks if the item is in the inventory
 
         Args:
             item_name (str): Name of item
