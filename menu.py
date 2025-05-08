@@ -26,7 +26,10 @@ def menu(plr: Entity):
 
         if user_choice == "1":
             for i in plr.inv.inventory.values():
-                print("Name: {} Slot: {} Amount: {} Damage: {} Healing: {}".format(i.name, i.location, i.current_amt, i.damage, i.healing_amt))
+                if i.healing and i.healing_amt > 0:
+                    print("Name: {} Slot: {} Amount: {} Damage: {} Healing: {}".format(i.name, i.location, i.current_amt, i.damage, i.healing_amt))
+                else:
+                    print("Name: {} Slot: {} Amount: {} Damage: {}".format(i.name, i.location, i.current_amt, i.damage))
 
         elif user_choice == "2":
             item_name = input("Enter the name of the item: ")
