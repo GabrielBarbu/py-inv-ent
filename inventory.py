@@ -1,3 +1,5 @@
+import os
+
 class Inventory:
     def __init__(self, max_slots: int):
         """Creates an inventory class
@@ -109,6 +111,14 @@ class Inventory:
         item.location = new_location
         result2 = self.add_to_inv(item)
         return (result1 + result2) - 1
+
+    def delete_saves(self):
+        if os.path.exists("inv.txt") and os.path.exists("char.txt"):
+            os.remove("inv.txt")
+            os.remove("char.txt")
+            return 1
+        else:
+            return -1
 
 class Item:
     def __init__(self, item_name: str, location: int, stackable: bool, max_stack: int, current_amt: int, damage: int, healing: bool, healing_amt: int):
