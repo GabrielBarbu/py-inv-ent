@@ -1,7 +1,7 @@
 from inventory import Inventory, Item
 
 class Entity:
-    def __init__(self, inventory: Inventory, char_name: str, char_health: int, char_base_dmg: int, equipped_item: str):
+    def __init__(self, inventory: Inventory, char_name: str, char_health: int, char_base_dmg: int, equipped_item: str, max_health: int):
         """Creates an entity class
 
         Args:
@@ -10,6 +10,7 @@ class Entity:
             char_health (int): Character health
             char_base_dmg (int): Character base damage
             equipped_item (str): Currently equipped item (has to be an item class)
+            max_health (int): The max health of the character
         """
         self.inv = inventory
         self.name = char_name
@@ -17,6 +18,7 @@ class Entity:
         self.base_dmg = char_base_dmg
         self.real_dmg = self.base_dmg
         self.equipped_item = equipped_item
+        self.max_health = max_health
 
     def check_item(self, item_name: str):
         """Equips an item, the damage becomes item damage
@@ -71,7 +73,7 @@ class Entity:
         self.inv.save_to_file()
         with open("char.txt", "w") as file:
             file.write(
-                self.name + "," + str(self.health) + "," + str(self.base_dmg) + "," + str(self.equipped_item) + "\n")
+                self.name + "," + str(self.health) + "," + str(self.base_dmg) + "," + str(self.equipped_item) + "," + str(self.max_health) + "\n")
 
     def use_item(self, item: Item):
         """Uses an item to heal
@@ -90,7 +92,7 @@ class Entity:
             if i.stackable and i.current_amt > 1:
                 i.remove_from_stack(1)
             else:
-                self.inv.remove_from_inv(i.location, self)
+                self.inv.remove_from_inv(i, self)
             return 1
         else:
             return -1
@@ -138,7 +140,8 @@ def load_char(inv: Inventory):
                 health = int(char_data[1])
                 base_dmg = int(char_data[2])
                 equipped_item = char_data[3]
-                plr = Entity(inv, name, health, base_dmg, equipped_item)
+                max_health = int(char_data[4])
+                plr = Entity(inv, name, health, base_dmg, equipped_item, max_health)
             plr.inv.load_from_file()
             result = plr.check_item(equipped_item)
             if result == 1:
@@ -152,7 +155,7 @@ def load_char(inv: Inventory):
 
         while temp_run:
             char_name = input("Enter the name of your character: ")
-            plr = Entity(inv, char_name, 100, 10, "None")
+            plr = Entity(inv, char_name, 100, 1, "None", 100)
             print("Character {} created".format(char_name))
             plr.save()
             temp_run = False

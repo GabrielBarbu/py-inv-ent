@@ -28,21 +28,17 @@ def cheat_menu(plr: Entity):
 
         def modify_health():
             health = tkinter.simpledialog.askinteger("Health Modification", "Enter new health:", parent=char_window)
-            plr.health = health
-            plr.save()
-
-        def modify_dmg():
-            damage = tkinter.simpledialog.askinteger("Damage Modification", "Enter new damage:", parent=char_window)
-            plr.base_dmg = damage
-            plr.save()
+            if health < 1:
+                stats_label.config(text="Incorrect health")
+            else:
+                plr.health = health
 
         stats_label = Label(char_window, text="", wraplength=300, justify="left")
-        stats_label.grid(column=0, row=4)
+        stats_label.grid(column=0, row=3)
 
         ttk.Button(char_window, text="View Character Stats", command=view_stats).grid(column=0, row=1)
         ttk.Button(char_window, text="Modify Health", command=modify_health).grid(column=0, row=2)
-        ttk.Button(char_window, text="Modify Damage", command=modify_dmg).grid(column=0, row=3)
-        ttk.Button(char_window, text="Close", command=char_window.destroy).grid(column=0, row=5)
+        ttk.Button(char_window, text="Close", command=char_window.destroy).grid(column=0, row=4)
 
     def add_item():
         item_name = tkinter.simpledialog.askstring("Add Item", "Enter the name of the item:", parent=cheat_window)
@@ -68,8 +64,16 @@ def cheat_menu(plr: Entity):
             healing_amt = 0
             healing = False
 
+        max_healing = tkinter.simpledialog.askstring("Max Healing", "Does this item increase the max health (Y/N):", parent=cheat_window)
+        if max_healing and max_healing.upper() == "Y":
+            max_heal_amt = tkinter.simpledialog.askinteger("Max Heal", "Enter the max heal amount:", parent=cheat_window)
+            max_healing = True
+        else:
+            max_heal_amt = 0
+            max_healing = False
+
         if 0 <= item_location <= plr.inv.max_slots and item_location not in plr.inv.inventory:
-            item = Item(item_name, item_location, stacking, max_stack, 1, damage, healing, healing_amt)
+            item = Item(item_name, item_location, stacking, max_stack, 1, damage, healing, healing_amt, max_healing, max_heal_amt)
             result = plr.inv.add_to_inv(item)
             if result == -1:
                 result_label.config(text="Inventory full!")
@@ -93,7 +97,7 @@ def cheat_menu(plr: Entity):
             add_amt = tkinter.simpledialog.askinteger("Add Quantity",
                                                       f"How much to add? (Max {item.max_stack - item.current_amt}):",
                                                       parent=cheat_window)
-            if add_amt:
+            if add_amt < item.max_stack:
                 if item.add_to_stack(add_amt) == 1:
                     plr.save()
                     result_label.config(text=f"Added {add_amt} to {item_name}.")
@@ -112,7 +116,7 @@ def cheat_menu(plr: Entity):
                     result_label.config(text="Unable to remove quantity.")
 
     result_label = Label(cheat_window, text="", wraplength=300, justify="left")
-    result_label.grid(column=0, row=3)
+    result_label.grid(column=0, row=4)
 
     ttk.Button(cheat_window, text="Add Item", command=add_item).grid(column=0, row=1)
     ttk.Button(cheat_window, text="Modify Item Quantity", command=modify_quantity).grid(column=0, row=2)

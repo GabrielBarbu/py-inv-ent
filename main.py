@@ -1,13 +1,16 @@
 from menu import menu
-from inventory import Inventory
-from entity import load_char
-from inventory import Item
+from inventory import Inventory, Item
+from entity import load_char, Entity
 from tkinter import *
 from tkinter import ttk
 from tkinter import simpledialog
+import random
+import time
 
 inv = Inventory(20)
 enm_inv = Inventory(5)
+
+slime = Entity(enm_inv, "slem", 30, 5, "None", 30)
 
 run = True
 
@@ -22,7 +25,7 @@ def play_game():
     game_window = Toplevel()
     game_window.title("Game Window")
 
-    ttk.Label(game_window, text="You are in a forest. There is a conveniently placed wooden sword on the ground").grid(
+    ttk.Label(game_window, text="You are in a forest. There is a conveniently placed wooden sword on the ground, there is also a slem").grid(
         column=0, row=0)
     user_input = Entry(game_window, width=40)
     user_input.grid(column=0, row=1)
@@ -46,8 +49,29 @@ def play_game():
             else:
                 output_label.config(text="Invalid location")
 
+        elif user_choice == "attack slem":
+            res = plr.attack(slime)
+            randomnum = random.randint(1,100)
+            if randomnum == 7:
+                slime.real_dmg = 999999999
+                slime.attack(plr)
+                pres = plr.check_health()
+                if pres == -1:
+                    output_label.config(text="YOU DED")
+                    time.sleep(5)
+                    res = plr.inv.delete_saves()
+                    if res == 1:
+                        exit()
+            if res == 1:
+                output_label.config(text="You have attacked {} for {} damage".format(slime.name, plr.real_dmg))
+            elif res == -1:
+                output_label.config(text="{} has perished".format(slime.name))
+
+        elif user_choice == "hug slime":
+            plr.health += 5
+
         elif user_choice == "menu":
-            menu(plr)
+            main_menu(plr)
 
     ttk.Button(game_window, text="Submit", command=process_input).grid(column=0, row=2)
     output_label = ttk.Label(game_window, text="", wraplength=300)
