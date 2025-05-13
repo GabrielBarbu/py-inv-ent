@@ -10,7 +10,7 @@ import time
 inv = Inventory(20)
 enm_inv = Inventory(5)
 
-slime = Entity(enm_inv, "slem", 30, 5, "None")
+slime = Entity(enm_inv, "slem", 30, 5, "None", 30)
 
 run = True
 
@@ -49,7 +49,7 @@ def play_game():
             else:
                 output_label.config(text="Invalid location")
 
-        if user_choice == "attack slem":
+        elif user_choice == "attack slem":
             res = plr.attack(slime)
             randomnum = random.randint(1,100)
             if randomnum == 7:
@@ -67,8 +67,11 @@ def play_game():
             elif res == -1:
                 output_label.config(text="{} has perished".format(slime.name))
 
+        elif user_choice == "hug slime":
+            plr.health += 5
+
         elif user_choice == "menu":
-            menu(plr)
+            main_menu(plr)
 
     ttk.Button(game_window, text="Submit", command=process_input).grid(column=0, row=2)
     output_label = ttk.Label(game_window, text="", wraplength=300)
