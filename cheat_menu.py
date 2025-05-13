@@ -22,8 +22,12 @@ def cheat_menu(plr: Entity):
         def view_stats():
             stats_text = (f"Name: {plr.name}\n"
                           f"Health: {plr.health}\n"
+                          f"Max Health: {plr.max_health}\n"
+                          f"Armour: {plr.armour}\n"
                           f"Current Damage: {plr.real_dmg}\n"
-                          f"Currently Equipped: {plr.equipped_item}")
+                          f"Currently Equipped: {plr.equipped_item}\n"
+                          f"Body Armour: {plr.body}\n"
+                          )
             stats_label.config(text=stats_text)
 
         def modify_health():
@@ -72,8 +76,16 @@ def cheat_menu(plr: Entity):
             max_heal_amt = 0
             max_healing = False
 
+        armour_inc = tkinter.simpledialog.askstring("Armour Increase", "Does this item increase the armour (Y/N):", parent=cheat_window)
+        if armour_inc and armour_inc.upper() == "Y":
+            armour_inc_amt = tkinter.simpledialog.askfloat("Armour Increase Amount", "Enter the armour increase amount:", parent=cheat_window)
+            armour_inc = True
+        else:
+            armour_inc_amt = 0
+            armour_inc = False
+
         if 0 <= item_location <= plr.inv.max_slots and item_location not in plr.inv.inventory:
-            item = Item(item_name, item_location, stacking, max_stack, 1, damage, healing, healing_amt, max_healing, max_heal_amt)
+            item = Item(item_name, item_location, stacking, max_stack, 1, damage, healing, healing_amt, max_healing, max_heal_amt, armour_inc, armour_inc_amt)
             result = plr.inv.add_to_inv(item)
             if result == -1:
                 result_label.config(text="Inventory full!")

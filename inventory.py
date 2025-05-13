@@ -78,7 +78,7 @@ class Inventory:
         """
         with open("inv.txt", "w") as file:
             for i in self.inventory.values():
-                file.write(f"{i.location},{i.name},{i.stackable},{i.max_stack},{i.current_amt},{i.damage},{i.healing},{i.healing_amt},{i.max_healing},{i.max_heal_amt}\n")
+                file.write(f"{i.location},{i.name},{i.stackable},{i.max_stack},{i.current_amt},{i.damage},{i.healing},{i.healing_amt},{i.max_healing},{i.max_heal_amt}, {i.armour_inc}, {i.armour_inc_amt}\n")
 
     def load_from_file(self):
         """Loads inventory from a text file
@@ -96,7 +96,9 @@ class Inventory:
                 healing_amt = int(item_data[7])
                 max_healing = bool(item_data[8])
                 max_heal_amt = int(item_data[9])
-                item = Item(item_name, item_location, stackable, max_stack, current_amt, damage, healing, healing_amt, max_healing, max_heal_amt)
+                armour_inc = float(item_data[10])
+                armour_inc_amt = float(item_data[11])
+                item = Item(item_name, item_location, stackable, max_stack, current_amt, damage, healing, healing_amt, max_healing, max_heal_amt, armour_inc, armour_inc_amt)
                 self.add_to_inv(item)
 
     def move_item(self, item: object, new_location:int, plr: object):
@@ -124,7 +126,7 @@ class Inventory:
             return -1
 
 class Item:
-    def __init__(self, item_name: str, location: int, stackable: bool, max_stack: int, current_amt: int, damage: int, healing: bool, healing_amt: int, max_healing: bool, max_heal_amt: int):
+    def __init__(self, item_name: str, location: int, stackable: bool, max_stack: int, current_amt: int, damage: int, healing: bool, healing_amt: int, max_healing: bool, max_heal_amt: int, armour_inc: float, armour_inc_amt: float):
         """Creates an Item class
 
         Args:
@@ -138,6 +140,8 @@ class Item:
             healing_amt (int): Amount item heals for
             max_healing (bool): Can it increase max health
             max_heal_amt (int): Amount item increases max health by
+            armour_inc (float): Can it increase armour
+            armour_inc_amt (float): Amount item increases armour by
         """
         self.name = item_name
         self.location = location
@@ -149,6 +153,8 @@ class Item:
         self.healing_amt = healing_amt
         self.max_healing = max_healing
         self.max_heal_amt = max_heal_amt
+        self.armour_inc = armour_inc
+        self.armour_inc_amt = armour_inc_amt
 
     def add_to_stack(self, amt_add: int):
         """Adds to item stack

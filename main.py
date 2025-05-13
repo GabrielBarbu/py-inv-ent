@@ -39,7 +39,7 @@ def play_game():
                                                     "Enter where you would like to place the wooden sword (0-{}):".format(
                                                         plr.inv.max_slots), parent=game_window)
             if not item_location > plr.inv.max_slots and not item_location < 0 and not item_location in plr.inv.inventory.keys():
-                item = Item("Wooden Sword", item_location, False, 1, 1, 10, False, 0)
+                item = Item("Wooden Sword", item_location, False, 1, 1, 10, False, 0, False, 0, False, 0)
                 result = plr.inv.add_to_inv(item)
                 if result == -1:
                     output_label.config(text="Inventory full")

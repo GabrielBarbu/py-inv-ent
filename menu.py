@@ -18,9 +18,13 @@ def open_character_menu(plr: Entity):
 
     def view_stats():
         stats_text = (f"Name: {plr.name}\n"
-                      f"Health: {plr.health}\n"
-                      f"Current Damage: {plr.real_dmg}\n"
-                      f"Currently Equipped: {plr.equipped_item}")
+                          f"Health: {plr.health}\n"
+                          f"Max Health: {plr.max_health}\n"
+                          f"Armour: {plr.armour}\n"
+                          f"Current Damage: {plr.real_dmg}\n"
+                          f"Currently Equipped: {plr.equipped_item}\n"
+                          f"Body Armour: {plr.body}\n"
+                          )
         stats_label.config(text=stats_text)
 
     def use_item():
