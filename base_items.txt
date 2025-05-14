@@ -1,0 +1,1 @@
+0,ac,False,0,1,1,False,0,False,0, False, 0

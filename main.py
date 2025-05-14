@@ -10,7 +10,7 @@ import time
 inv = Inventory(20)
 enm_inv = Inventory(5)
 
-slime = Entity(enm_inv, "slem", 30, 5, "None", 30)
+slime = Entity(enm_inv, "slem", 30, 5, "None", 30, 0, 0.85)
 
 run = True
 
