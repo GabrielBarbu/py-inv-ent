@@ -1,7 +1,7 @@
 from inventory import Inventory, Item
 
 class Entity:
-    def __init__(self, inventory: Inventory, char_name: str, char_health: int, char_base_dmg: int, equipped_item: str):
+    def __init__(self, inventory: Inventory, char_name: str, char_health: int, char_base_dmg: int, equipped_item: str, max_health: int, armour: float, max_armour: float):
         """Creates an entity class
 
         Args:
@@ -10,6 +10,9 @@ class Entity:
             char_health (int): Character health
             char_base_dmg (int): Character base damage
             equipped_item (str): Currently equipped item (has to be an item class)
+            max_health (int): The max health of the character
+            armour (float): The armour of the character
+            max_armour (float): The max armour of the character
         """
         self.inv = inventory
         self.name = char_name
@@ -17,6 +20,13 @@ class Entity:
         self.base_dmg = char_base_dmg
         self.real_dmg = self.base_dmg
         self.equipped_item = equipped_item
+        self.max_health = max_health
+        self.armour = armour
+        self.max_armour = max_armour
+        self.torso = "None"
+        self.head = "None"
+        self.legs = "None"
+        self.feet = "None"
 
     def check_item(self, item_name: str):
         """Equips an item, the damage becomes item damage
@@ -43,9 +53,26 @@ class Entity:
             int: 1 if successful, -1 if failed
         """
         if self.equipped_item == "None":
-            self.equipped_item = item.name
-            self.real_dmg = item.damage
-            return 1
+            if item.armour_type == "torso":
+                self.torso = item.name
+                self.armour = item.armour_inc_amt
+                return 1
+            elif item.armour_type == "head":
+                self.head = item.name
+                self.armour = item.armour_inc_amt
+                return 1
+            elif item.armour_type == "legs":
+                self.legs = item.name
+                self.armour = item.armour_inc_amt
+                return 1
+            elif item.armour_type == "feet":
+                self.feet = item.name
+                self.armour = item.armour_inc_amt
+                return 1
+            else:
+                self.equipped_item = item.name
+                self.real_dmg = item.damage
+                return 1
         else:
             return -1
 
@@ -62,6 +89,22 @@ class Entity:
             self.equipped_item = "None"
             self.real_dmg = self.base_dmg
             return 1
+        elif self.torso.strip().lower() == item.name.strip().lower():
+            self.torso = "None"
+            self.armour = 0
+            return 1
+        elif self.legs.strip().lower() == item.name.strip().lower():
+            self.legs = "None"
+            self.armour = 0
+            return 1
+        elif self.head.strip().lower() == item.name.strip().lower():
+            self.head = "None"
+            self.armour = 0
+            return 1
+        elif self.feet.strip().lower() == item.name.strip().lower():
+            self.feet = "None"
+            self.armour = 0
+            return 1
         else:
             return -1
 
@@ -71,7 +114,8 @@ class Entity:
         self.inv.save_to_file()
         with open("char.txt", "w") as file:
             file.write(
-                self.name + "," + str(self.health) + "," + str(self.base_dmg) + "," + str(self.equipped_item) + "\n")
+                self.name + "," + str(self.health) + "," + str(self.base_dmg) + "," + str(self.equipped_item) + "," + str(self.max_health) + "," + str(self.armour) + "," + str(self.max_armour) +
+                "," + self.torso + "," + self.head + "," + self.legs + "," + self.feet + "\n")
 
     def use_item(self, item: Item):
         """Uses an item to heal
@@ -90,7 +134,7 @@ class Entity:
             if i.stackable and i.current_amt > 1:
                 i.remove_from_stack(1)
             else:
-                self.inv.remove_from_inv(i.location, self)
+                self.inv.remove_from_inv(i, self)
             return 1
         else:
             return -1
@@ -116,10 +160,31 @@ class Entity:
             int: Calls check_health() and returns value from there
         """
         if enemy.health > 0:
-            enemy.health -= self.real_dmg
+            if enemy.armour > 0:
+                enemy.health -= (self.real_dmg - (self.real_dmg * enemy.armour))
+            else:
+                enemy.health -= self.real_dmg
             return enemy.check_health()
         else:
             return enemy.check_health()
+
+    def load_armour(self):
+        """Loads the armour of the character
+
+        Returns:
+            int: 1 if successful, -1 if failed
+        """
+        with open("char.txt", "r") as file:
+            char = [line.strip().split(',') for line in file]
+            for char_data in char:
+                torso = char_data[7]
+                head = char_data[8]
+                legs = char_data[9]
+                feet = char_data[10]
+                self.torso = torso
+                self.head = head
+                self.legs = legs
+                self.feet = feet
 
 def load_char(inv: Inventory):
     """Loads the character
@@ -138,7 +203,10 @@ def load_char(inv: Inventory):
                 health = int(char_data[1])
                 base_dmg = int(char_data[2])
                 equipped_item = char_data[3]
-                plr = Entity(inv, name, health, base_dmg, equipped_item)
+                max_health = int(char_data[4])
+                armour = float(char_data[5])
+                max_armour = float(char_data[6])
+                plr = Entity(inv, name, health, base_dmg, equipped_item, max_health, armour, max_armour)
             plr.inv.load_from_file()
             result = plr.check_item(equipped_item)
             if result == 1:
@@ -152,7 +220,7 @@ def load_char(inv: Inventory):
 
         while temp_run:
             char_name = input("Enter the name of your character: ")
-            plr = Entity(inv, char_name, 100, 10, "None")
+            plr = Entity(inv, char_name, 100, 1, "None", 100, 0, 0.9)
             print("Character {} created".format(char_name))
             plr.save()
             temp_run = False

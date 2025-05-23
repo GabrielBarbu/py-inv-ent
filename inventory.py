@@ -1,3 +1,5 @@
+import os
+
 class Inventory:
     def __init__(self, max_slots: int):
         """Creates an inventory class
@@ -8,6 +10,7 @@ class Inventory:
         self.inventory = {}
         self.max_slots = max_slots
         self.used_slots = 0
+        self.hidden_inv = {}
         
     def find_item(self, item_name: str):
         """Uses the item name to find the item in inventory and
@@ -23,7 +26,6 @@ class Inventory:
         for i in self.inventory.values():
             if i.name.strip().lower() == item_name.strip().lower():
                 return i
-
         return -1
 
     def add_to_inv(self, item: object):
@@ -76,7 +78,7 @@ class Inventory:
         """
         with open("inv.txt", "w") as file:
             for i in self.inventory.values():
-                file.write(f"{i.location},{i.name},{i.stackable},{i.max_stack},{i.current_amt},{i.damage},{i.healing},{i.healing_amt},\n")
+                file.write(f"{i.location},{i.name},{i.stackable},{i.max_stack},{i.current_amt},{i.damage},{i.healing},{i.healing_amt},{i.max_healing},{i.max_heal_amt},{i.armour_inc},{i.armour_inc_amt},{i.armour_type}\n")
 
     def load_from_file(self):
         """Loads inventory from a text file
@@ -92,26 +94,62 @@ class Inventory:
                 damage = int(item_data[5])
                 healing = bool(item_data[6])
                 healing_amt = int(item_data[7])
-                item = Item(item_name, item_location, stackable, max_stack, current_amt, damage, healing, healing_amt)
+                max_healing = bool(item_data[8])
+                max_heal_amt = int(item_data[9])
+                armour_inc = bool(item_data[10])
+                armour_inc_amt = float(item_data[11])
+                armour_type = item_data[12]
+                item = Item(item_name, item_location, stackable, max_stack, current_amt, damage, healing, healing_amt, max_healing, max_heal_amt, armour_inc, armour_inc_amt, armour_type)
                 self.add_to_inv(item)
 
-    def move_item(self, item: object, new_location:int):
+    def move_item(self, item: object, new_location:int, plr: object):
         """Adds to item stack
 
         Args:
             item (object): Item class
             new_location (int): New location of item
+            plr (object): Player class
 
         Returns:
             int: 1 if successful, -1 or -2 if failed
         """
-        result1 = self.remove_from_inv(item.location)
+        result1 = self.remove_from_inv(item, plr)
         item.location = new_location
         result2 = self.add_to_inv(item)
         return (result1 + result2) - 1
 
+    def delete_saves(self):
+        if os.path.exists("inv.txt") and os.path.exists("char.txt"):
+            os.remove("inv.txt")
+            os.remove("char.txt")
+            return 1
+        else:
+            return -1
+        
+    def load_base_items(self):
+        if os.path.exists("base_items.txt"):
+            with open("base_items.txt", "r") as file:
+                for line in file:
+                    item_data = line.strip().split(',')
+                    item_data = line.strip().split(',')
+                    item_location = int(item_data[0])
+                    item_name = item_data[1]
+                    stackable = bool(item_data[2])
+                    max_stack = int(item_data[3])
+                    current_amt = int(item_data[4])
+                    damage = int(item_data[5])
+                    healing = bool(item_data[6])
+                    healing_amt = int(item_data[7])
+                    max_healing = bool(item_data[8])
+                    max_heal_amt = int(item_data[9])
+                    armour_inc = bool(item_data[10])
+                    armour_inc_amt = float(item_data[11])
+                    armour_type = item_data[12]
+                    item = Item(item_name, item_location, stackable, max_stack, current_amt, damage, healing, healing_amt, max_healing, max_heal_amt, armour_inc, armour_inc_amt, armour_type)
+                    self.hidden_inv.update({item.location: item})
+
 class Item:
-    def __init__(self, item_name: str, location: int, stackable: bool, max_stack: int, current_amt: int, damage: int, healing: bool, healing_amt: int):
+    def __init__(self, item_name: str, location: int, stackable: bool, max_stack: int, current_amt: int, damage: int, healing: bool, healing_amt: int, max_healing: bool, max_heal_amt: int, armour_inc: float, armour_inc_amt: float, armour_type: str):
         """Creates an Item class
 
         Args:
@@ -123,6 +161,11 @@ class Item:
             damage (int): Item damage
             healing (bool): Can it heal
             healing_amt (int): Amount item heals for
+            max_healing (bool): Can it increase max health
+            max_heal_amt (int): Amount item increases max health by
+            armour_inc (float): Can it increase armour
+            armour_inc_amt (float): Amount item increases armour by
+            armour_type (str): Type of armour
         """
         self.name = item_name
         self.location = location
@@ -132,6 +175,11 @@ class Item:
         self.damage = damage
         self.healing = healing
         self.healing_amt = healing_amt
+        self.max_healing = max_healing
+        self.max_heal_amt = max_heal_amt
+        self.armour_inc = armour_inc
+        self.armour_inc_amt = armour_inc_amt
+        self.armour_type = armour_type
 
     def add_to_stack(self, amt_add: int):
         """Adds to item stack

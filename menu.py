@@ -18,9 +18,16 @@ def open_character_menu(plr: Entity):
 
     def view_stats():
         stats_text = (f"Name: {plr.name}\n"
-                      f"Health: {plr.health}\n"
-                      f"Current Damage: {plr.real_dmg}\n"
-                      f"Currently Equipped: {plr.equipped_item}")
+                          f"Health: {plr.health}\n"
+                          f"Max Health: {plr.max_health}\n"
+                          f"Armour: {plr.armour}\n"
+                          f"Current Damage: {plr.real_dmg}\n"
+                          f"Currently Equipped: {plr.equipped_item}\n"
+                          f"Torso Armour: {plr.torso}\n"
+                          f"Legs Armour: {plr.legs}\n"
+                          f"Head Armour: {plr.head}\n"
+                          f"Feet Armour: {plr.feet}"
+                          )
         stats_label.config(text=stats_text)
 
     def use_item():
@@ -31,8 +38,14 @@ def open_character_menu(plr: Entity):
                 result = plr.use_item(item)
 
                 if result == 1 and item != -1:
-                    healing = item.healing_amt
-                    stats_label.config(text=f"Used {item.name}, healed {healing} HP.")
+                    healing = item.healing
+                    max_healing = item.max_healing
+                    if healing and max_healing:
+                        stats_label.config(text=f"Used {item.name}, healed {item.healing} HP and increased max health by {item.max_heal_amt}")
+                    elif max_healing:
+                        stats_label.config(text=f"Used {item.name}, increased max health by {item.max_heal_amt}")
+                    elif healing:
+                        stats_label.config(text=f"Used {item.name}, healed {item.healing} HP.")
                     plr.save()
                 else:
                     stats_label.config(text="Item does not exist or cannot be used.")
@@ -56,7 +69,7 @@ def menu(plr: Entity):
 
     def update_inventory_display():
         inventory_text = "\n".join([
-            f"Name: {i.name} | Slot: {i.location} | Amount: {i.current_amt} | Damage: {i.damage} | Healing: {i.healing_amt}"
+            f"Name: {i.name} | Slot: {i.location} | Amount: {i.current_amt} | Damage: {i.damage} | Healing: {i.healing_amt} | Max Health Increase: {i.max_heal_amt} | Armour Increase: {i.armour_inc_amt}"
             for i in plr.inv.inventory.values()
         ])
         use_label.config(text=inventory_text)
@@ -109,7 +122,7 @@ def menu(plr: Entity):
                 new_location = int(new_location)
                 if 0 <= new_location <= plr.inv.max_slots and new_location not in plr.inv.inventory.keys():
                     item = plr.inv.find_item(item_name)
-                    result = plr.inv.move_item(item, new_location)
+                    result = plr.inv.move_item(item, new_location, plr)
                     if result == 1:
                         use_label.config(text=f"{item.name} moved to slot {new_location}.")
                         plr.save()
