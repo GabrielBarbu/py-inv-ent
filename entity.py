@@ -59,28 +59,28 @@ class Entity:
         elif self.torso == "None":
             if item.armour_type == "torso":
                 self.torso = item.name
-                self.armour = item.armour_inc_amt
+                self.armour += item.armour_inc_amt
                 return 1
             else:
                 return -1
         elif self.head == "None":
             if item.armour_type == "head":
                 self.head = item.name
-                self.armour = item.armour_inc_amt
+                self.armour += item.armour_inc_amt
                 return 1
             else:
                 return -1
         elif self.legs == "None":
             if item.armour_type == "legs":
                 self.legs = item.name
-                self.armour = item.armour_inc_amt
+                self.armour += item.armour_inc_amt
                 return 1
             else:
                 return -1
         elif self.feet == "None":
             if item.armour_type == "feet":
                 self.feet = item.name
-                self.armour = item.armour_inc_amt
+                self.armour += item.armour_inc_amt
                 return 1
             else:
                 return -1
@@ -102,19 +102,19 @@ class Entity:
             return 1
         elif self.torso.strip().lower() == item.name.strip().lower():
             self.torso = "None"
-            self.armour = 0
+            self.armour -= item.armour_inc_amt
             return 1
         elif self.legs.strip().lower() == item.name.strip().lower():
             self.legs = "None"
-            self.armour = 0
+            self.armour -= item.armour_inc_amt
             return 1
         elif self.head.strip().lower() == item.name.strip().lower():
             self.head = "None"
-            self.armour = 0
+            self.armour -= item.armour_inc_amt
             return 1
         elif self.feet.strip().lower() == item.name.strip().lower():
             self.feet = "None"
-            self.armour = 0
+            self.armour -= item.armour_inc_amt
             return 1
         else:
             return -1
