@@ -52,27 +52,38 @@ class Entity:
         Returns:
             int: 1 if successful, -1 if failed
         """
-        if self.equipped_item == "None":
+        if self.equipped_item == "None" and item.armour_inc == False:
+            self.equipped_item = item.name
+            self.real_dmg = item.damage
+            return 1
+        elif self.torso == "None":
             if item.armour_type == "torso":
                 self.torso = item.name
                 self.armour = item.armour_inc_amt
                 return 1
-            elif item.armour_type == "head":
+            else:
+                return -1
+        elif self.head == "None":
+            if item.armour_type == "head":
                 self.head = item.name
                 self.armour = item.armour_inc_amt
                 return 1
-            elif item.armour_type == "legs":
+            else:
+                return -1
+        elif self.legs == "None":
+            if item.armour_type == "legs":
                 self.legs = item.name
                 self.armour = item.armour_inc_amt
                 return 1
-            elif item.armour_type == "feet":
+            else:
+                return -1
+        elif self.feet == "None":
+            if item.armour_type == "feet":
                 self.feet = item.name
                 self.armour = item.armour_inc_amt
                 return 1
             else:
-                self.equipped_item = item.name
-                self.real_dmg = item.damage
-                return 1
+                return -1
         else:
             return -1
 
