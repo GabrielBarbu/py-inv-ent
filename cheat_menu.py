@@ -153,13 +153,11 @@ def cheat_menu(plr: Entity):
             stats_label.config(text=stats_text)
 
         def add_item():
-            item_name = tkinter.simpledialog.askstring("Item Name", "Enter item name to add (Case Sensitive):", parent=base_window)
+            item_name = tkinter.simpledialog.askstring("Item Name", "Enter item name to add:", parent=base_window)
             for i in plr.inv.hidden_inv.values():
-                print(i.name.strip().lower() == item_name.strip().lower())
                 if i.name.strip().lower() == item_name.strip().lower():
                     plr.inv.add_to_inv(i)
-                else:
-                    stats_label.config(text="Incorrect item name")
+                    plr.save()
 
         stats_label = Label(base_window, text="", wraplength=300, justify="left")
         stats_label.grid(column=0, row=3)
