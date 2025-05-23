@@ -1,3 +1,4 @@
+import inventory
 from inventory import Inventory, Item
 
 class Entity:
@@ -192,10 +193,10 @@ class Entity:
                 head = char_data[8]
                 legs = char_data[9]
                 feet = char_data[10]
-                self.torso = torso
-                self.head = head
-                self.legs = legs
-                self.feet = feet
+                self.equip_item(self.inv.find_item(torso))
+                self.equip_item(self.inv.find_item(head))
+                self.equip_item(self.inv.find_item(legs))
+                self.equip_item(self.inv.find_item(feet))
 
 def load_char(inv: Inventory):
     """Loads the character
