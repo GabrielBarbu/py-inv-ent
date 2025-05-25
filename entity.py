@@ -124,9 +124,10 @@ class Entity:
         """Saves the character to a text file and calls inventory save
         """
         self.inv.save_to_file()
+        print(self.torso, self.head, self.legs, self.feet)
         with open("char.txt", "w") as file:
             file.write(
-                self.name + "," + str(self.health) + "," + str(self.base_dmg) + "," + str(self.equipped_item) + "," + str(self.max_health) + "," + str(self.armour) + "," + str(self.max_armour) +
+                self.name + "," + str(self.health) + "," + str(self.base_dmg) + "," + str(self.equipped_item) + "," + str(self.max_health) + "," + str(self.max_armour) +
                 "," + self.torso + "," + self.head + "," + self.legs + "," + self.feet + "\n")
 
     def use_item(self, item: Item):
@@ -189,14 +190,27 @@ class Entity:
         with open("char.txt", "r") as file:
             char = [line.strip().split(',') for line in file]
             for char_data in char:
-                torso = char_data[7]
-                head = char_data[8]
-                legs = char_data[9]
-                feet = char_data[10]
-                self.equip_item(self.inv.find_item(torso))
-                self.equip_item(self.inv.find_item(head))
-                self.equip_item(self.inv.find_item(legs))
-                self.equip_item(self.inv.find_item(feet))
+                torso = char_data[6]
+                head = char_data[7]
+                legs = char_data[8]
+                feet = char_data[9]
+                print(torso,head,legs,feet)
+                if torso != "None":
+                    self.equip_item(self.inv.find_item(torso))
+                else:
+                    self.torso = "None"
+                if head != "None":
+                    self.equip_item(self.inv.find_item(head))
+                else:
+                    self.head = "None"
+                if legs != "None":
+                    self.equip_item(self.inv.find_item(legs))
+                else:
+                    self.legs = "None"
+                if feet != "None":
+                    self.equip_item(self.inv.find_item(feet))
+                else:
+                    self.feet = "None"
 
 def load_char(inv: Inventory):
     """Loads the character
@@ -216,10 +230,11 @@ def load_char(inv: Inventory):
                 base_dmg = int(char_data[2])
                 equipped_item = char_data[3]
                 max_health = int(char_data[4])
-                armour = float(char_data[5])
-                max_armour = float(char_data[6])
-                plr = Entity(inv, name, health, base_dmg, equipped_item, max_health, armour, max_armour)
+                max_armour = float(char_data[5])
+                plr = Entity(inv, name, health, base_dmg, equipped_item, max_health, 0, max_armour)
             plr.inv.load_from_file()
+            plr.inv.load_base_items()
+            plr.load_armour()
             result = plr.check_item(equipped_item)
             if result == 1:
                 return plr

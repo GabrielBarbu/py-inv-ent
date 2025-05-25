@@ -16,8 +16,6 @@ run = True
 
 try:
     plr = load_char(inv)
-    plr.inv.load_base_items()
-    plr.load_armour()
 except OSError:
     print("Character could not be loaded")
     run = False
