@@ -72,16 +72,15 @@ def cheat_menu(plr: Entity):
             max_heal_amt = 0
             max_healing = False
 
-        if 0 <= item_location <= plr.inv.max_slots and item_location not in plr.inv.inventory:
-            item = Item(item_name, item_location, stacking, max_stack, 1, damage, healing, healing_amt, max_healing, max_heal_amt)
-            result = plr.inv.add_to_inv(item)
-            if result == -1:
-                result_label.config(text="Inventory full!")
-            else:
-                plr.save()
-                result_label.config(text=f"{item_name} added to inventory.")
-        else:
+        item = Item(item_name, item_location, stacking, max_stack, 1, damage, healing, healing_amt, max_healing, max_heal_amt)
+        result = plr.inv.add_to_inv(item)
+        if result == -1:
+            result_label.config(text="Inventory full")
+        elif result == -2:
             result_label.config(text="Invalid slot or item parameters.")
+        else:
+            plr.save()
+            result_label.config(text=f"{item_name} added to inventory.")
 
     def modify_quantity():
         item_name = tkinter.simpledialog.askstring("Modify Quantity", "Enter the name of the item:",

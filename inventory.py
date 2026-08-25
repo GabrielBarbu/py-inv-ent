@@ -28,30 +28,33 @@ class Inventory:
 
         return -1
 
-    def add_to_inv(self, item: object):
+    def add_to_inv(self, item: object, item_location: int):
         """Adds an item to the inventory
 
         Args:
             item (object): Takes item class object
 
         Returns:
-            int: 1 if successful, -1 if failed
+            int: 1 if successful, -1 if failed due to full inventory, -2 if failed due to occupied slot
         """
         if not self.used_slots >= self.max_slots:
-            if item.location in self.inventory.keys() and item.location <= self.max_slots:
-                item.location += 1
-                self.inventory.update({item.location: item})
-                self.used_slots += 1
-                return 1
-            elif item.location in self.inventory.keys() and item.location >= 0:
-                item.location -= 1
-                self.inventory.update({item.location: item})
-                self.used_slots += 1
-                return 1
+            if not item_location > self.max_slots and not item_location < 0 and not item_location in self.inventory.keys():
+                if item.location in self.inventory.keys() and item.location <= self.max_slots:
+                    item.location += 1
+                    self.inventory.update({item.location: item})
+                    self.used_slots += 1
+                    return 1
+                elif item.location in self.inventory.keys() and item.location >= 0:
+                    item.location -= 1
+                    self.inventory.update({item.location: item})
+                    self.used_slots += 1
+                    return 1
+                else:
+                    self.inventory.update({item.location: item})
+                    self.used_slots += 1
+                    return 1
             else:
-                self.inventory.update({item.location: item})
-                self.used_slots += 1
-                return 1
+                return -2
         else:
             return -1
 
@@ -97,7 +100,7 @@ class Inventory:
                 max_healing = bool(item_data[8])
                 max_heal_amt = int(item_data[9])
                 item = Item(item_name, item_location, stackable, max_stack, current_amt, damage, healing, healing_amt, max_healing, max_heal_amt)
-                self.add_to_inv(item)
+                self.add_to_inv(item, item_location)
 
     def move_item(self, item: object, new_location:int, plr: object):
         """Adds to item stack

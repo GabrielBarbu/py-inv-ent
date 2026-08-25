@@ -35,19 +35,21 @@ def play_game():
         output_label.config(text="")
 
         if user_choice == "pickup sword":
-            item_location = simpledialog.askinteger("Item Location",
-                                                    "Enter where you would like to place the wooden sword (0-{}):".format(
-                                                        plr.inv.max_slots), parent=game_window)
-            if not item_location > plr.inv.max_slots and not item_location < 0 and not item_location in plr.inv.inventory.keys():
-                item = Item("Wooden Sword", item_location, False, 1, 1, 10, False, 0)
-                result = plr.inv.add_to_inv(item)
+            if plr.inv.find_item("Wooden Sword") != -1:
+                output_label.config(text="You already have Wooden Sword in your inventory")
+            else:
+                item_location = simpledialog.askinteger("Item Location",
+                                                        "Enter where you would like to place the wooden sword (0-{}):".format(
+                                                            plr.inv.max_slots), parent=game_window)
+                item = Item("Wooden Sword", item_location, False, 1, 1, 10, False, 0, False, 0)
+                result = plr.inv.add_to_inv(item, item_location)
                 if result == -1:
                     output_label.config(text="Inventory full")
+                elif result == 2:
+                    output_label.config(text="Invalid location")
                 else:
                     output_label.config(text="You have picked up {}".format(item.name))
                     plr.save()
-            else:
-                output_label.config(text="Invalid location")
 
         elif user_choice == "attack slem":
             res = plr.attack(slime)
@@ -68,10 +70,11 @@ def play_game():
                 output_label.config(text="{} has perished".format(slime.name))
 
         elif user_choice == "hug slime":
+            output_label.config(text="Slem gave you +5hp")
             plr.health += 5
 
         elif user_choice == "menu":
-            main_menu(plr)
+            main_menu()
 
     ttk.Button(game_window, text="Submit", command=process_input).grid(column=0, row=2)
     output_label = ttk.Label(game_window, text="", wraplength=300)
