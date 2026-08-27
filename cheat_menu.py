@@ -73,7 +73,7 @@ def cheat_menu(plr: Entity):
             max_healing = False
 
         item = Item(item_name, item_location, stacking, max_stack, 1, damage, healing, healing_amt, max_healing, max_heal_amt)
-        result = plr.inv.add_to_inv(item)
+        result = plr.inv.add_to_inv(item, item_location)
         if result == -1:
             result_label.config(text="Inventory full")
         elif result == -2:

@@ -20,21 +20,6 @@ class Entity:
         self.equipped_item = equipped_item
         self.max_health = max_health
 
-    def check_item(self, item_name: str):
-        """Equips an item, the damage becomes item damage
-
-        Args:
-            item_name (str): Name of item
-
-        Returns:
-            int: 1 if successful, "None" if failed
-        """
-        item = self.inv.find_item(item_name)
-        if type(item) == Item:
-            return 1
-        else:
-            return "None"
-
     def equip_item(self, item: Item):
         """Equips an item, the damage becomes item damage
 
@@ -108,7 +93,7 @@ class Entity:
         else:
             return 1
 
-    def attack(self, enemy: object):
+    def attack(self, enemy: Entity):
         """Attacks the enemy
 
         Args:
@@ -141,13 +126,15 @@ def load_char(inv: Inventory):
                 base_dmg = int(char_data[2])
                 equipped_item = char_data[3]
                 max_health = int(char_data[4])
-                plr = Entity(inv, name, health, base_dmg, equipped_item, max_health)
+                plr = Entity(inv, name, health, base_dmg, "None", max_health)
             plr.inv.load_from_file()
-            result = plr.check_item(equipped_item)
-            if result == 1:
+            result = plr.inv.find_item(equipped_item)
+            if result == -1:
+                plr.equipped_item = "None"
+                plr.save()
                 return plr
             else:
-                plr.equipped_item = result
+                plr.equip_item(result)
                 plr.save()
                 return plr
     except OSError:

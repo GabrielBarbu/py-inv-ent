@@ -1,4 +1,5 @@
 import os
+import entity
 
 class Inventory:
     def __init__(self, max_slots: int):
@@ -28,11 +29,12 @@ class Inventory:
 
         return -1
 
-    def add_to_inv(self, item: object, item_location: int):
+    def add_to_inv(self, item: Item, item_location: int):
         """Adds an item to the inventory
 
         Args:
-            item (object): Takes item class object
+            item (Item): Takes item class object
+            item_location (int): Location of item
 
         Returns:
             int: 1 if successful, -1 if failed due to full inventory, -2 if failed due to occupied slot
@@ -58,12 +60,12 @@ class Inventory:
         else:
             return -1
 
-    def remove_from_inv(self, item: object, plr: object):
+    def remove_from_inv(self, item: Item, plr: entity.Entity):
         """Removes an item from inventory
 
         Args:
-            item (object): Item class
-            plr (object): Player class
+            item (Item): Item class
+            plr (Entity): Player class
 
         Returns:
             int: 1 if successful, -1 if failed
@@ -102,23 +104,38 @@ class Inventory:
                 item = Item(item_name, item_location, stackable, max_stack, current_amt, damage, healing, healing_amt, max_healing, max_heal_amt)
                 self.add_to_inv(item, item_location)
 
-    def move_item(self, item: object, new_location:int, plr: object):
+    def move_item(self, item: Item, new_location:int, plr: entity.Entity):
         """Adds to item stack
 
         Args:
-            item (object): Item class
+            item (Item): Item class
             new_location (int): New location of item
-            plr (object): Player class
+            plr (Entity): Player class
 
         Returns:
-            int: 1 if successful, -1 or -2 if failed
+            int: 1 if successful,
+            0 if failed to remove or add item from/to inventory,
+            -1 if failed due to occupied slot, -2 if both failed,
+            -3 if removal failed and occupied inventory slot
         """
         result1 = self.remove_from_inv(item, plr)
         item.location = new_location
-        result2 = self.add_to_inv(item)
-        return (result1 + result2) - 1
+        result2 = self.add_to_inv(item, item.location)
+        result = result1 + result2
 
-    def delete_saves(self):
+        if result == 0:
+            return 0
+        elif result == -1:
+            return -1
+        elif result == -2:
+            return -2
+        elif result == -3:
+            return -3
+        else:
+            return 1
+
+    @staticmethod
+    def delete_saves():
         if os.path.exists("inv.txt") and os.path.exists("char.txt"):
             os.remove("inv.txt")
             os.remove("char.txt")
